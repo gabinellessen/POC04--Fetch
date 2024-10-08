@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Paletas de Cores - ColourLovers</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 20px;
+    }
+    .paleta {
+      border: 1px solid #ddd;
+      padding: 10px;
+      margin: 10px;
+      width: 300px;
+      text-align: center;
+    }
+    .cores {
+      display: flex;
+      justify-content: center;
+      margin-top: 10px;
+    }
+    .cor {
+      width: 50px;
+      height: 50px;
+      margin: 0 2px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Paletas de Cores Populares</h1>
+  <div id="paletas-container"></div>
+
+  <script>
+    const url = 'http://www.colourlovers.com/api/palettes?format=json';
+
+    async function buscarPaletas() {
+      try {
+        const response = await fetch(url);
+        if (!response.ok) {
+          throw new Error('Erro na requisição: ' + response.statusText);
+        }
+        
+        const paletas = await response.json();
+        const container = document.getElementById('paletas-container');
+        
+        // Verifica se a API retornou dados
+        if (paletas.length === 0) {
+          container.innerHTML = '<p>Nenhuma paleta encontrada.</p>';
+          return;
+        }
+
+        paletas.forEach(paleta => {
+          const paletaDiv = document.createElement('div');
+          paletaDiv.classList.add('paleta');
+          
+          const titulo = document.createElement('h2');
+          titulo.textContent = paleta.title;
+          
+          const coresDiv = document.createElement('div');
+          coresDiv.classList.add('cores');
+          
+          paleta.colors.forEach(corHex => {
+            const corDiv = document.createElement('div');
+            corDiv.classList.add('cor');
+            corDiv.style.backgroundColor = `#${corHex}`;
+            coresDiv.appendChild(corDiv);
+          });
+          
+          paletaDiv.appendChild(titulo);
+          paletaDiv.appendChild(coresDiv);
+          container.appendChild(paletaDiv);
+        });
+      } catch (error) {
+        console.error('Erro:', error);
+        document.getElementById('paletas-container').innerHTML = '<p>Ocorreu um erro ao buscar as paletas.</p>';
+      }
+    }
+
+    buscarPaletas();
+  </script>
+</body>
+</html>
